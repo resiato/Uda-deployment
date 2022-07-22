@@ -10,6 +10,17 @@ orbs:
   aws-cli: circleci/aws-cli@2.0.3
 # Orchestrate or schedule a set of jobs
 
+commands:
+  destroy_environment:
+    steps:
+      - run:
+          name: Destroy environment
+          # ${CIRCLE_WORKFLOW_ID} is a Built-in environment variable
+          # ${CIRCLE_WORKFLOW_ID:0:5} takes the first 5 chars of the variable CIRCLE_CI_WORKFLOW_ID
+          when: on_fail
+          command: |
+            aws cloudformation delete-stack --stack-name myStack-${CIRCLE_WORKFLOW_ID:0:5}
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -54,7 +65,7 @@ jobs:
       - run:
           name: smoke test
           command: |
-            URL="https://blog.udacoty.com/"
+            URL="https://blog.udac0ty.com/"
             # Test if website exists
             if curl -s --head ${URL} 
             then
@@ -62,6 +73,7 @@ jobs:
             else
               return 1
             fi
+      - destroy_environment
 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
@@ -69,5 +81,5 @@ workflows:
   my-workflow:
     jobs:
       - create_infrastructure
-      - configure_infrastructure
+      -  #configure_infrastructure
       - smoke_test
