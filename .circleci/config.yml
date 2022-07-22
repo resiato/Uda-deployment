@@ -39,24 +39,6 @@ jobs:
       # Fail the job intentionally to simulate an error.
       # Uncomment the line below if you want to fail the current step
       # run: return 1
-      - destroy_environment
-
-  configure_infrastructure:
-    docker:
-      - image: python:3.7-alpine3.11
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["2d:e4:20:29:68:6e:d8:e8:dd:f3:ad:33:3a:ac:34:b8"]
-      - run:
-          name: Install dependencies
-          command: |
-            # install the dependencies needed for your playbook
-            apk add --update ansible
-      - run:
-          name: Configure server
-          command: |
-            ansible-playbook -i inventory.txt main-remote.yml
 
   smoke_test:
     docker:
@@ -74,5 +56,5 @@ workflows:
   my-workflow:
     jobs:
       - create_infrastructure
-      - configure_infrastructure
+      -  # configure_infrastructure
       - smoke_test
